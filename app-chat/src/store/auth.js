@@ -1,24 +1,51 @@
 import { defineStore } from 'pinia';
+import axios from "axios";
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isLoggedIn: false,
+    token: null,
     user: null,
   }),
   actions: {
-    login(data) {
-      this.isLoggedIn = true;
-      this.user = data;
+    async login(data) {
+      // this.token = ;
+      const result = await axios.post("/login", { email: data.emailInput.value, password: data.password.value });
+      if (result && result.status == 200) {
+        const token = result.data.access_token;
+        this.setAccessToken(token);
+        this.loadAccessToken();
+      }
+
+    },
+    setAccessToken(token) {
+      this.token = token;
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
+    async loadAccessToken() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        this.token = token;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        const data = await this.getUser();
+        if (data) {
+          this.user = data.data;
+        }
+      }
     },
     logout() {
-      this.isLoggedIn = false;
-      this.user = null;
+      this.token = null;
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
     },
-    register(data) {
-      // Implement registration logic here
+    async getUser() {
+      return await axios.get("/user");
+    },
+    async register(data) {
+
     },
   },
   getters: {
-    // Implement getters here
+    isLoggedIn: (state) => !!state.user,
   },
 });

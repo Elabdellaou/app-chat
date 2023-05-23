@@ -7,7 +7,9 @@ body {
   min-width: 100vw;
   min-height: 100vh;
 }
-
+v-cloak{
+  display: none !important;
+}
 
 .invalid-feedback{
   display: block !important;

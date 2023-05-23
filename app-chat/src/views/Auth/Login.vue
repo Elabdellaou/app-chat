@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary">Login</button>
     </div>
   </form>
 </template>
@@ -35,9 +35,14 @@
 import { ref } from "vue";
 import { required, email } from "vuelidate/lib/validators";
 import { useVuelidate } from "@vuelidate/core";
+import { useAuthStore } from "../../store/auth";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const emailInput = ref("");
 const password = ref("");
+
+const authStore = useAuthStore();
 
 const rules = {
   emailInput: { required, email },
@@ -54,9 +59,9 @@ const submitForm = async () => {
       email: emailInput.value,
       password: password.value,
     });
+    await authStore.login({ emailInput, password });
+    if (authStore.isLoggedIn) router.push("/home");
   }
 };
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

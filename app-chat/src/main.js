@@ -17,13 +17,18 @@ app.use(pinia)
    .mount('#app');
 
 const authStore = useAuthStore();
-app.config.globalProperties.$auth = authStore;
+// app.config.globalProperties.$auth = authStore;
 
 authPlugin(pinia);
+
+// load access token
+authStore.loadAccessToken();
 
 router.beforeEach((to, from, next) => {
    if (to.meta.requiresAuth && !authStore.isLoggedIn) {
       next('/login');
+   } else if (to.meta.requiresNotAuth && authStore.isLoggedIn) {
+      next('/home');
    } else {
       next();
    }

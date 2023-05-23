@@ -22,13 +22,13 @@ export const routes = [
         path: "/login",
         name: "Login",
         component: Login,
-        meta: {}
+        meta: { requiresNotAuth: true },
     },
     {
         path: "/register",
         name: "Register",
         component: Register,
-        meta: {}
+        meta: { requiresNotAuth: true },
     },
     {
         path: "/users",
