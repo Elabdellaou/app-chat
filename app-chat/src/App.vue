@@ -46,6 +46,42 @@ watch(isAuthenticated, (newValue) => {
 });
 </script>
 
-<style>
-/* Your custom styles */
+<style lang="scss">
+input {
+  transition: all 0.7s linear !important;
+}
+input:valid {
+  border-color: rgb(0, 128, 0) !important;
+  box-shadow: none !important;
+}
+
+#form-group {
+  position: relative;
+  input {
+    padding-left: 25px;
+    padding-right: 25px;
+    ~ #first-icon{
+      left: 5px !important;
+    }
+    ~ #last-icon{
+      right: 5px !important;
+    }
+    // + svg:last-child{
+    //   left: 5px;
+    // }
+    &:valid ~ svg {
+      color: green !important;
+    }
+    &:focus ~ svg {
+      color: #86b7fe;
+    }
+  }
+  svg {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.5s linear;
+  }
+}
 </style>

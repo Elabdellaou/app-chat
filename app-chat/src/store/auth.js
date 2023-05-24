@@ -28,9 +28,10 @@ export const useAuthStore = defineStore('auth', {
         this.token = token;
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const data = await this.getUser();
+        
         if (data) {
           this.user = data.data;
-        }
+        } 
       }
     },
     logout() {
@@ -39,7 +40,20 @@ export const useAuthStore = defineStore('auth', {
       delete axios.defaults.headers.common['Authorization'];
     },
     async getUser() {
-      return await axios.get("/user");
+      // const response=await axios.get("/user");
+      // console.log(response)
+      // if (response.status == 401) {
+      //   this.logout()
+      //   return null;
+      // }
+      // return response;
+      let response =null;
+      await axios.get("/user").then(res=>{
+        response=res;
+      }).catch(errors=>{
+        this.logout()
+      })
+      return response;
     },
     async register(data) {
 
