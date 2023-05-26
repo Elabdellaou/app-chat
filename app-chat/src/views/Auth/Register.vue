@@ -124,7 +124,9 @@
       </div>
     </div>
     <div class="d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary">Register</button>
+      <button type="submit" class="btn btn-primary" :disabled="v$.$invalid">
+        Register
+      </button>
     </div>
   </form>
 </template>
@@ -170,13 +172,21 @@ const submitForm = async () => {
     await authStore
       .register({ name, emailInput, password, password_confirmation })
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
       })
-      .catch((errors) => {
-        console.log(errors);
-        //   const parentAlert = document.querySelector("#alert");
-        //   parentAlert.innerHTML =
-        //     '<div class="alert alert-danger alert-dismissible fade show" role="alert">The email or password is incorrect. <button type="button" class="btn-close" data-bs-dismiss="alert"aria-label="Fermer"></button></div>';
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.status == 422 &&
+          error.response.data.message
+        ) {
+          const parentAlert = document.querySelector("#alert");
+          parentAlert.innerHTML =
+            '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+            error.response.data.message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"aria-label="Fermer"></button></div>';
+        }
       });
     if (authStore.isLoggedIn) router.push("/home");
   }
