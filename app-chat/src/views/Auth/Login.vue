@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary" :disabled="$v.$invalid">Login</button>
+      <button type="submit" class="btn btn-primary" :disabled="v$.$invalid">Login</button>
     </div>
   </form>
 </template>

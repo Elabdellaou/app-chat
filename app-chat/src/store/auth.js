@@ -18,6 +18,7 @@ export const useAuthStore = defineStore('auth', {
 
     },
     setAccessToken(token) {
+      // console.log(token)
       this.token = token;
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -36,7 +37,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async logout() {
 
-      await axios.post("/logout")
+      // await axios.post("/logout")
       this.token = null;
       this.user = null;
       localStorage.removeItem('token');
