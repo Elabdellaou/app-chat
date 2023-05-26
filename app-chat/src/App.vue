@@ -18,8 +18,11 @@
       <router-link v-if="!isAuthenticated" to="/register" class="ms-2"
         >Register</router-link
       >
-      <router-link v-if="isAuthenticated" class="ms-2" to="/logout"
-        >Logout</router-link
+      <a
+        v-if="isAuthenticated"
+        @click.prevent="logout"
+        class="ms-2"
+        >Logout</a
       >
     </nav>
     <main>
@@ -36,9 +39,12 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const authStore = useAuthStore();
 
-const isAuthenticated = computed(() => authStore.isLoggedIn);
-const user = computed(() => authStore.user);
-
+let isAuthenticated = computed(() => authStore.isLoggedIn);
+let user = computed(() => authStore.user);
+const logout = async () => {
+  await authStore.logout()
+  router.push("/login");
+};
 watch(isAuthenticated, (newValue) => {
   if (newValue) {
     router.push("/home");
@@ -60,10 +66,10 @@ input:valid {
   input {
     padding-left: 25px;
     padding-right: 25px;
-    ~ #first-icon{
+    ~ #first-icon {
       left: 5px !important;
     }
-    ~ #last-icon{
+    ~ #last-icon {
       right: 5px !important;
     }
     // + svg:last-child{

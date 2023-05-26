@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="submitForm">
-    <p class="h2 text-center">Please Sign in</p>
+    <p class="h2 text-center">Sign in</p>
     <div class="mb-3" id="alert"></div>
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">Email address</label>
@@ -61,7 +61,7 @@
       </div>
     </div>
     <div class="d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary" :disabled="$v.$invalid">Login</button>
     </div>
   </form>
 </template>
@@ -90,14 +90,14 @@ const submitForm = async () => {
   const result = await v$.value.$validate();
   if (result) {
     // Form is valid, submit data
-    console.log("Form submitted:", {
-      email: emailInput.value,
-      password: password.value,
-    });
+    // console.log("Form submitted:", {
+    //   email: emailInput.value,
+    //   password: password.value,
+    // });
     await authStore
       .login({ emailInput, password })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
+        
       })
       .catch((errors) => {
         const parentAlert = document.querySelector("#alert");

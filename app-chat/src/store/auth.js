@@ -28,14 +28,17 @@ export const useAuthStore = defineStore('auth', {
         this.token = token;
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const data = await this.getUser();
-        
+
         if (data) {
           this.user = data.data;
-        } 
+        }
       }
     },
-    logout() {
+    async logout() {
+
+      await axios.post("/logout")
       this.token = null;
+      this.user = null;
       localStorage.removeItem('token');
       delete axios.defaults.headers.common['Authorization'];
     },
@@ -47,16 +50,22 @@ export const useAuthStore = defineStore('auth', {
       //   return null;
       // }
       // return response;
-      let response =null;
-      await axios.get("/user").then(res=>{
-        response=res;
-      }).catch(errors=>{
+      let response = null;
+      await axios.get("/user").then(res => {
+        response = res;
+      }).catch(errors => {
         this.logout()
       })
       return response;
     },
     async register(data) {
-
+      const result = await axios.post("/register", { password_confirmation: data.password_confirmation.value, name: data.name.value, email: data.emailInput.value, password: data.password.value });
+      // console.log(result)
+      if (result && result.status == 200) {
+        const token = result.data.token;
+        this.setAccessToken(token);
+        this.loadAccessToken();
+      }
     },
   },
   getters: {
