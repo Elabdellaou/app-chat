@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth("api-user")->user());
+        return response()->json(new UserCollection(auth("api-user")->user()));
     }
 
     /**
