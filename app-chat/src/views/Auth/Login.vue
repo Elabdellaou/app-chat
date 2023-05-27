@@ -1,45 +1,23 @@
 <template>
-  <form @submit.prevent="submitForm">
+  <Form @submit="submitForm"  :validation-schema="schema">
     <p class="h2 text-center">Sign in</p>
     <div class="mb-3" id="alert"></div>
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">Email address</label>
       <div id="form-group">
-        <input
-          type="email"
-          class="form-control"
-          v-model="emailInput"
-          required
-          id="exampleInputEmail1"
-        />
+        <Field id="exampleInputEmail1" class="form-control" name="email" type="email" />
         <font-awesome-icon id="first-icon" :icon="['fas', 'envelope']" />
       </div>
-
-      <div v-if="v$.emailInput.$error" class="form-text invalid-feedback">
-        Email is required and must be valid
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="email" />
       </div>
     </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
       <div id="form-group">
-        <input
-          v-if="hide_password"
-          type="password"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password"
-          id="exampleInputPassword1"
-        />
-        <input
-          v-else
-          type="text"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password"
-          id="exampleInputPassword1"
-        />
+        <Field v-if="hide_password" :keep-value="password" name="password" class="form-control" type="password"  />
+        <Field v-else :keep-value="password" name="password" class="form-control" type="text"  />
+
         <font-awesome-icon
           id="last-icon"
           @click="hide_password = !hide_password"
@@ -56,46 +34,40 @@
         />
         <font-awesome-icon id="first-icon" :icon="['fas', 'lock']" />
       </div>
-      <div v-if="v$.password.$error" class="form-text invalid-feedback">
-        Password is required
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="password" />
       </div>
-    </div>
+    </div> 
+    
     <div class="d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary" :disabled="v$.$invalid">Login</button>
+      <button type="submit" class="btn btn-primary">Login</button>
     </div>
-  </form>
+  </Form>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { required, email, minLength } from "vuelidate/lib/validators";
-import { useVuelidate } from "@vuelidate/core";
 import { useAuthStore } from "../../store/auth";
 import { useRouter } from "vue-router";
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
+const schema = yup.object({
+  email: yup.string().required().email(),
+  password: yup.string().required().min(8),
+});
 const router = useRouter();
-let emailInput = ref("");
+
+let email = ref("");
 let password = ref("");
 let hide_password = ref(true);
+
 const authStore = useAuthStore();
 
-const rules = {
-  emailInput: { required, email },
-  password: { required, minLength: minLength(8) },
-};
 
-const v$ = useVuelidate(rules, { emailInput, password });
-
-const submitForm = async () => {
-  const result = await v$.value.$validate();
-  if (result) {
-    // Form is valid, submit data
-    // console.log("Form submitted:", {
-    //   email: emailInput.value,
-    //   password: password.value,
-    // });
+const submitForm = async (values) => {
     await authStore
-      .login({ emailInput, password })
+      .login(values)
       .then(() => {
         
       })
@@ -105,7 +77,6 @@ const submitForm = async () => {
           '<div class="alert alert-danger alert-dismissible fade show" role="alert">The email or password is incorrect. <button type="button" class="btn-close" data-bs-dismiss="alert"aria-label="Fermer"></button></div>';
       });
     if (authStore.isLoggedIn) router.push("/home");
-  }
 };
 </script>
 <style lang="scss" scoped></style>

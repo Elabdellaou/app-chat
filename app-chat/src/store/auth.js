@@ -9,7 +9,8 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(data) {
       // this.token = ;
-      const result = await axios.post("/login", { email: data.emailInput.value, password: data.password.value });
+      // console.log(data)
+      const result = await axios.post("/login",data);
       if (result && result.status == 200) {
         const token = result.data.access_token;
         this.setAccessToken(token);
@@ -60,7 +61,7 @@ export const useAuthStore = defineStore('auth', {
       return response;
     },
     async register(data) {
-      const result = await axios.post("/register", { password_confirmation: data.password_confirmation.value, name: data.name.value, email: data.emailInput.value, password: data.password.value });
+      const result = await axios.post("/register", data);
       // console.log(result)
       if (result && result.status == 200) {
         const token = result.data.token;

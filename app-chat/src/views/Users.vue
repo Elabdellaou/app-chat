@@ -1,8 +1,6 @@
 <template>
   <div>
     <h1>Welcome to the Users Page</h1>
-    <p v-if="isAuthenticated">You are logged in as: {{ user.name }}</p>
-    <p v-else>Please login or register to continue</p>
   </div>
 </template>
 

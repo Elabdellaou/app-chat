@@ -2,10 +2,8 @@
   <div id="app" v-cloak>
     <header>
       <h1>Welcome to My App</h1>
-      <p v-if="isAuthenticated" class="text-center">
-        Logged in as: {{ user.name }}
-      </p>
-      <p v-else class="text-center">Not logged in</p>
+      <p v-if="isAuthenticated">You are logged in as: {{ user.name }}</p>
+    <p v-else>Please login or register to continue</p>
     </header>
     <nav>
       <router-link v-if="isAuthenticated" class="" to="/">Home</router-link>

@@ -1,62 +1,35 @@
 <template>
-  <form @submit.prevent="submitForm">
+  <Form @submit="submitForm" :validation-schema="schema">
     <p class="h2 text-center">Register</p>
     <div class="mb-3" id="alert"></div>
     <div class="mb-3">
       <label for="name" class="form-label">Name</label>
       <div id="form-group">
-        <input
-          type="name"
-          class="form-control"
-          v-model="name"
-          required
-          id="name"
-        />
+        <Field id="name" class="form-control" name="name" type="text" />
         <font-awesome-icon id="first-icon" :icon="['fas', 'user']" />
       </div>
 
-      <div v-if="v$.name.$error" class="form-text invalid-feedback">
-        Name is required and must be valid
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="name" />
       </div>
     </div>
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">Email address</label>
       <div id="form-group">
-        <input
-          type="email"
-          class="form-control"
-          v-model="emailInput"
-          required
-          id="exampleInputEmail1"
-        />
+        <Field id="exampleInputEmail1" class="form-control" name="email" type="email" />
         <font-awesome-icon id="first-icon" :icon="['fas', 'envelope']" />
       </div>
 
-      <div v-if="v$.emailInput.$error" class="form-text invalid-feedback">
-        Email is required and must be valid
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="email" />
       </div>
     </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
       <div id="form-group">
-        <input
-          v-if="hide_password"
-          type="password"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password"
-          id="exampleInputPassword1"
-        />
-        <input
-          v-else
-          type="text"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password"
-          id="exampleInputPassword1"
-        />
+        <Field  v-if="hide_password" :keep-value="password" name="password" class="form-control" type="password"  />
+        <Field  v-else :keep-value="password" name="password" class="form-control" type="text"  />
+
         <font-awesome-icon
           id="last-icon"
           @click="hide_password = !hide_password"
@@ -73,8 +46,8 @@
         />
         <font-awesome-icon id="first-icon" :icon="['fas', 'lock']" />
       </div>
-      <div v-if="v$.password.$error" class="form-text invalid-feedback">
-        Password is required
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="password" />
       </div>
     </div>
     <div class="mb-3">
@@ -82,24 +55,9 @@
         >Password confirmation</label
       >
       <div id="form-group">
-        <input
-          v-if="hide_password_confirmation"
-          type="password"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password_confirmation"
-          id="exampleInputPassword1"
-        />
-        <input
-          v-else
-          type="text"
-          class="form-control"
-          required
-          minlength="8"
-          v-model="password_confirmation"
-          id="exampleInputPassword1"
-        />
+        <Field  v-if="hide_password_confirmation" :keep-value="password_confirmation" name="password_confirmation" class="form-control" type="password"  />
+        <Field  v-else :keep-value="password_confirmation" name="password_confirmation" class="form-control" type="text"  />
+
         <font-awesome-icon
           id="last-icon"
           @click="hide_password_confirmation = !hide_password_confirmation"
@@ -116,30 +74,34 @@
         />
         <font-awesome-icon id="first-icon" :icon="['fas', 'lock']" />
       </div>
-      <div
-        v-if="v$.password_confirmation.$error"
-        class="form-text invalid-feedback"
-      >
-        Password confirmation is required
+      <div class="form-text invalid-feedback">
+        <ErrorMessage name="password_confirmation" />
       </div>
     </div>
     <div class="d-flex justify-content-center">
-      <button type="submit" class="btn btn-primary" :disabled="v$.$invalid">
+      <button type="submit" class="btn btn-primary">
         Register
       </button>
     </div>
-  </form>
+  </Form>
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
-import { useVuelidate } from "@vuelidate/core";
 import { useAuthStore } from "../../store/auth";
 import { useRouter } from "vue-router";
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
+
+const schema = yup.object({
+  name:yup.string().required().min(3),
+  email: yup.string().required().email(),
+  password: yup.string().required('Password is required').min(8),
+  password_confirmation: yup.string().required().oneOf([yup.ref('password'), null], 'Password confirmation must match'),
+});
 
 const router = useRouter();
-let emailInput = ref("");
+let email = ref("");
 let name = ref("");
 let password = ref("");
 let password_confirmation = ref("");
@@ -147,30 +109,11 @@ let hide_password = ref(true);
 let hide_password_confirmation = ref(true);
 const authStore = useAuthStore();
 
-const rules = {
-  emailInput: { required, email },
-  password: { required, minLength: minLength(8) },
-  name: { required, minLength: minLength(3) },
-  password_confirmation: {
-    required,
-    minLength: minLength(8),
-    // sameAsPassword: sameAs("password"),
-  },
-};
 
-const v$ = useVuelidate(rules, {
-  emailInput,
-  password,
-  name,
-  password_confirmation,
-});
-
-const submitForm = async () => {
-  const result = await v$.value.$validate();
-  if (result) {
+const submitForm = async (values) => {
     // Form is valid, submit data
     await authStore
-      .register({ name, emailInput, password, password_confirmation })
+      .register(values)
       .then((res) => {
         console.log(res.data);
       })
@@ -189,7 +132,6 @@ const submitForm = async () => {
         }
       });
     if (authStore.isLoggedIn) router.push("/home");
-  }
 };
 </script>
 <style lang="scss" scoped></style>
