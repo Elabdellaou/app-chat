@@ -32,5 +32,6 @@ Route::middleware('auth:admin')->group(function () {
 require __DIR__.'/auth.php';
 
 Route::get('/broadcast', function () {
-    broadcast(new Hello());
+    Hello::dispatch();
+    return "sent";
 });

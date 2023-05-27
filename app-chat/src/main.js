@@ -65,7 +65,13 @@ window.Echo = new Echo({
    key: process.env.VUE_APP_WEBSOCKETS_KEY,
    wsHost: process.env.VUE_APP_WEBSOCKETS_SERVER,
    cluster: process.env.VUE_APP_WEBSOCKETS_CLUSTER, // Replace with your Pusher app cluster
-   wsPort:6001,
+   wsPort: 6001,
    forceTLS: false,
    disableStats: true,
+   authEndpoint: "/broadcasting/auth",
+   auth: {
+      headers: {
+         Authorization: `Bearer ${authStore.token}`,
+      },
+   },
 });

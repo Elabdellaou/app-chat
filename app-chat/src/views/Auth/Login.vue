@@ -15,8 +15,8 @@
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
       <div id="form-group">
-        <Field v-if="hide_password" :keep-value="password" name="password" class="form-control" type="password"  />
-        <Field v-else :keep-value="password" name="password" class="form-control" type="text"  />
+        <Field v-if="hide_password" :keep-value="password" name="password" class="form-control" type="password" autocomplete="current-password"  />
+        <Field v-else :keep-value="password" name="password" class="form-control" type="text" autocomplete="current-password"  />
 
         <font-awesome-icon
           id="last-icon"
